@@ -1,28 +1,50 @@
 import "./App.css";
-import Companies from "./components/Companies/Companies";
-import Contact from "./components/Contact/Contact";
-import Footer from "./components/Footer/Footer";
-import GetStarted from "./components/GetStarted/GetStarted";
-import Header from "./components/Header/Header";
-import Hero from "./components/Hero/Hero";
-import Residencies from "./components/Residencies/Residencies";
-import Value from "./components/Value/Value";
-
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Website from "./pages/Website";
+import { Suspense, useState } from "react";
+import Layout from "./components/Layout/Layout";
+import Properties from "./pages/Properties/Properties";
+import { QueryClient, QueryClientProvider } from 'react-query'
+import {ReactQueryDevtools} from 'react-query/devtools'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import React from "react";
+import Property from './pages/Property/Property'
+import UserDetailContext from './context/UserDetailContext'
 function App() {
+ 
+
+  const queryClient = new QueryClient()
+
+  const [userDetails,setUserDetails] = useState({
+    favourites:[],
+    bookings:[],
+    token:null
+});
+
   return (
-    <div className="App">
-      <div>
-        <div className="white-gradient" />
-        <Header />
-        <Hero />
-      </div>
-      <Companies />
-      <Residencies/>
-      <Value/>
-      <Contact/>
-      <GetStarted/>
-      <Footer/>
-    </div>
+    <UserDetailContext.Provider value={{userDetails,setUserDetails}}>
+    <QueryClientProvider client={queryClient}>
+
+      <BrowserRouter>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+
+            <Route element={<Layout />} >
+              <Route path="/" element={<Website />} />
+              <Route path="/properties">
+              {/* if the property id is not given by default this tag will run */}
+              <Route index element ={<Properties/>}/>
+              <Route path=":propertyId" element ={<Property/>}/>
+              </Route>
+            </Route>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+      <ToastContainer/>
+      <ReactQueryDevtools initialIsOpen ={+false}/>
+    </QueryClientProvider>
+    </UserDetailContext.Provider>
   );
 }
 

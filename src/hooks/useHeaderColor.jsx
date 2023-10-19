@@ -17,7 +17,7 @@ const [headerColor, setHeaderColor] = useState(false)
     };
   }, []);
 
-  return headerColor
+  return headerColor;
 };
 
 export default useHeaderColor;
